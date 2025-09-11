@@ -10,7 +10,7 @@ class LessonSerializer(serializers.ModelSerializer):
 
 class CourseSerializer(serializers.ModelSerializer):
     # Вложенный сериализатор для отображения уроков в составе курса
-    lessons = LessonSerializer(source='lessons_set', many=True, read_only=True)
+    lessons = LessonSerializer(source='lesson_set', many=True, read_only=True)
 
     class Meta:
         model = Course

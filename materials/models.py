@@ -20,7 +20,6 @@ class Lesson(models.Model):
     preview = models.ImageField(upload_to='lessons/previews/', blank=True, null=True, verbose_name='Превью')
     video_link = models.URLField(blank=True, null=True, verbose_name='Ссылка на видео')
 
-    # Связь "многие-к-одному" (Many-to-One): У многих уроков один курс.
     course = models.ForeignKey(Course, on_delete=models.SET_NULL, related_name='lessons', blank=True, null=True,
                                verbose_name='Курс')
 
