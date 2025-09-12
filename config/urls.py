@@ -3,5 +3,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('materials.urls')),  # Подключаем URLs из приложения materials
+    path('api/', include('materials.urls')),
+    path('api/users/', include('users.urls'))
 ]
