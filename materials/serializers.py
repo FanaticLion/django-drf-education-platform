@@ -9,9 +9,12 @@ class LessonSerializer(serializers.ModelSerializer):
 
 
 class CourseSerializer(serializers.ModelSerializer):
-    # Вложенный сериализатор для отображения уроков в составе курса
-    lessons = LessonSerializer(source='lesson_set', many=True, read_only=True)
+    lessons_count = serializers.SerializerMethodField()
+    lessons = LessonSerializer(many=True, read_only=True)  # УБРАТЬ source='lessons'
 
     class Meta:
         model = Course
         fields = '__all__'
+
+    def get_lessons_count(self, obj):
+        return obj.lessons.count()
