@@ -3,6 +3,12 @@ from .models import Payment
 
 
 class PaymentFilter(filters.FilterSet):
+    ordering = filters.OrderingFilter(
+        fields=(
+            ('payment_date', 'payment_date'),
+        ),
+    )
+
     class Meta:
         model = Payment
         fields = {
@@ -10,9 +16,3 @@ class PaymentFilter(filters.FilterSet):
             'paid_lesson': ['exact'],
             'payment_method': ['exact'],
         }
-
-    ordering = filters.OrderingFilter(
-        fields=(
-            ('payment_date', 'date'),
-        ),
-    )
