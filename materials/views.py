@@ -1,12 +1,19 @@
-from rest_framework import viewsets, generics, permissions
-from .models import Course, Lesson
+from rest_framework import viewsets, generics, permissions, status
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
+from django.conf import settings
+from .models import Course, Lesson, Subscription
 from .serializers import CourseSerializer, LessonSerializer
+from .paginators import LessonPaginator, CoursePaginator
 from users.permissions import IsModerator, IsOwner
 
+User = settings.AUTH_USER_MODEL
 
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
+    pagination_class = CoursePaginator
 
     def get_permissions(self):
         if self.action in ['create', 'destroy']:
@@ -28,11 +35,39 @@ class CourseViewSet(viewsets.ModelViewSet):
             return Course.objects.all()
         return Course.objects.filter(owner=user)
 
+    def get_serializer_context(self):
+
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+
+
+class SubscriptionAPIView(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        course_id = request.data.get('course_id')
+        course_item = get_object_or_404(Course, id=course_id)
+
+        subs_item = Subscription.objects.filter(user=user, course=course_item)
+
+        if subs_item.exists():
+            subs_item.delete()
+            message = 'Подписка удалена'
+        else:
+            Subscription.objects.create(user=user, course=course_item)
+            message = 'Подписка добавлена'
+
+        return Response({"message": message}, status=status.HTTP_200_OK)
+
 
 class LessonListAPIView(generics.ListAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     permission_classes = [permissions.IsAuthenticated]
+    pagination_class = LessonPaginator
 
     def get_queryset(self):
         user = self.request.user
@@ -45,7 +80,6 @@ class LessonRetrieveAPIView(generics.RetrieveAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     permission_classes = [permissions.IsAuthenticated, IsModerator | IsOwner]
-
 
 class LessonCreateAPIView(generics.CreateAPIView):
     queryset = Lesson.objects.all()
@@ -60,7 +94,6 @@ class LessonUpdateAPIView(generics.UpdateAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     permission_classes = [permissions.IsAuthenticated, IsModerator | IsOwner]
-
 
 class LessonDestroyAPIView(generics.DestroyAPIView):
     queryset = Lesson.objects.all()
