@@ -3,11 +3,11 @@ from .models import Payment
 
 
 class PaymentFilter(filters.FilterSet):
-    ordering = filters.OrderingFilter(
-        fields=(
-            ('payment_date', 'payment_date'),
-        ),
-    )
+    #ordering = filters.OrderingFilter(
+        #fields=(
+            #('payment_date', 'payment_date'),
+        #),
+    #)
 
     class Meta:
         model = Payment
