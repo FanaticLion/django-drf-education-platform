@@ -1,12 +1,15 @@
 from pathlib import Path
 from datetime import timedelta
-
+import os
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv()
 
-
-SECRET_KEY = 'django-insecure-_6$p0!1mvb*dzb$_z$db5c!snuge5=^wvnq^=l3n@b!3c0q80+'
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
+STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 
 DEBUG = True
@@ -26,6 +29,7 @@ INSTALLED_APPS = [
     'materials','django_filters',
     'rest_framework_simplejwt',
     'django.contrib.admindocs',
+     'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -59,8 +63,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+
 
 DATABASES = {
     'default': {
@@ -87,9 +90,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
 LANGUAGE_CODE = 'ru-ru'
 
 TIME_ZONE = 'Europe/Moscow'
@@ -99,13 +99,8 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
 STATIC_URL = 'static/'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.User'
@@ -124,9 +119,20 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
+    'DEFAULT_SCHEMA_CLASS':
+        'drf_spectacular.openapi.AutoSchema',
 }
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=24),  # вместо 60 минут
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 }
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Educational Platform API',
+    'DESCRIPTION': 'API для образовательной платформы с курсами и уроками',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
+
+BASE_URL = 'http://localhost:8000'
