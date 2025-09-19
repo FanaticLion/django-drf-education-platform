@@ -8,15 +8,16 @@ class Course(models.Model):
     description = models.TextField(blank=True, null=True, verbose_name='Описание')
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
     null=True, blank=True, verbose_name='Владелец')
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Стоимость курса')
 
 
-class Meta:
-    verbose_name = 'Курс'
-    verbose_name_plural = 'Курсы'
+    class Meta:
+        verbose_name = 'Курс'
+        verbose_name_plural = 'Курсы'
 
 
-def __str__(self):
-    return self.title
+    def __str__(self):
+        return self.title
 
 
 class Lesson(models.Model):
@@ -28,15 +29,16 @@ class Lesson(models.Model):
     null=True, blank=True, verbose_name='Владелец')
     course = models.ForeignKey(Course, on_delete=models.SET_NULL, related_name='lessons', blank=True, null=True,
     verbose_name='Курс')
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Стоимость урока')
 
 
-class Meta:
-    verbose_name = 'Урок'
-    verbose_name_plural = 'Уроки'
+    class Meta:
+        verbose_name = 'Урок'
+        verbose_name_plural = 'Уроки'
 
 
-def __str__(self):
-    return self.title
+    def __str__(self):
+        return self.title
 
 
 class Subscription(models.Model):

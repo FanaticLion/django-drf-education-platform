@@ -31,6 +31,7 @@ class Payment(models.Model):
     PAYMENT_METHODS = [
         ('cash', 'Наличные'),
         ('transfer', 'Перевод на счет'),
+        ('stripe', 'Stripe'),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
@@ -41,6 +42,8 @@ class Payment(models.Model):
                                     null=True, blank=True, verbose_name='Оплаченный урок')
     amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Сумма оплаты')
     payment_method = models.CharField(max_length=10, choices=PAYMENT_METHODS, verbose_name='Способ оплаты')
+    stripe_session_id = models.CharField(max_length=255, blank=True, null=True, verbose_name='ID сессии Stripe')
+    stripe_payment_status = models.CharField(max_length=20, default='pending', verbose_name='Статус оплаты Stripe')
 
     class Meta:
         verbose_name = 'Платеж'
