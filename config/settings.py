@@ -2,7 +2,7 @@ from pathlib import Path
 from datetime import timedelta
 import os
 from dotenv import load_dotenv
-
+from celery.schedules import crontab
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv()
@@ -29,7 +29,7 @@ INSTALLED_APPS = [
     'materials','django_filters',
     'rest_framework_simplejwt',
     'django.contrib.admindocs',
-     'drf_spectacular',
+     'drf_spectacular','django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -136,3 +136,24 @@ SPECTACULAR_SETTINGS = {
 }
 
 BASE_URL = 'http://localhost:8000'
+
+CELERY_BROKER_URL = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
+CELERY_TIMEZONE = 'Europe/Moscow'
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+CELERY_BEAT_SCHEDULE = {
+    'deactivate-inactive-users-monthly': {
+        'task': 'materials.tasks.deactivate_inactive_users',
+        'schedule': crontab(day_of_month='1', hour='0', minute='0'),  # 1-е число каждого месяца в 00:00
+    },
+}

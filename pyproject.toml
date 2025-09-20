@@ -18,6 +18,9 @@ docutils = "^0.22"
 drf-spectacular = "^0.28.0"
 stripe = "^12.5.1"
 python-dotenv = "^1.1.1"
+celery = "^5.5.3"
+redis = "^6.4.0"
+django-celery-beat = "^2.8.1"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
