@@ -3,10 +3,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.conf import settings
+from datetime import timedelta
+from django.utils import timezone
 from .models import Course, Lesson, Subscription
 from .serializers import CourseSerializer, LessonSerializer
 from .paginators import LessonPaginator, CoursePaginator
 from users.permissions import IsModerator, IsOwner
+from .tasks import send_course_update_notification
 
 User = settings.AUTH_USER_MODEL
 
@@ -40,6 +43,18 @@ class CourseViewSet(viewsets.ModelViewSet):
         context = super().get_serializer_context()
         context['request'] = self.request
         return context
+
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        print("=== ВЫЗВАН perform_update ===")
+        print(f"Курс: {instance.title}")
+        print(f"Время обновления: {instance.updated_at}")
+        #four_hours_ago = timezone.now() - timedelta(hours=4)
+        #if instance.updated_at < four_hours_ago:
+
+        send_course_update_notification.delay(instance.id)
+        print("=== Задача отправлена ===")
+        return instance
 
 
 class SubscriptionAPIView(APIView):
